@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Perfect Day — Mini CSS Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="wrap">
+    <header class="header">
+      <h1 class="title">Perfect Day ✦</h1>
+      <p class="subtitle">A small, classy, cute & futuristic front-end project — no JavaScript.</p>
+    </header>
+
+    <!-- Hidden controls: player position (radio) + item checkboxes -->
+    <form class="controls-form" aria-hidden="true">
+      <!-- Player position radios -->
+      <input type="radio" name="pos" id="pos-left" class="pos-input" />
+      <input type="radio" name="pos" id="pos-center" class="pos-input" checked />
+      <input type="radio" name="pos" id="pos-right" class="pos-input" />
+
+      <!-- Collectible items (checkboxes). Clicking the falling label toggles collection -->
+      <input type="checkbox" id="item-1" class="item-input" />
+      <input type="checkbox" id="item-2" class="item-input" />
+      <input type="checkbox" id="item-3" class="item-input" />
+      <input type="checkbox" id="item-4" class="item-input" />
+      <input type="checkbox" id="item-5" class="item-input" />
+      <input type="checkbox" id="item-6" class="item-input" />
+    </form>
+
+    <section class="game-area" role="application" aria-label="Perfect Day game">
+      <!-- Decorative back: soft sun + clouds + stars -->
+      <div class="sky">
+        <div class="sun" aria-hidden="true"></div>
+        <div class="cloud c1" aria-hidden="true"></div>
+        <div class="cloud c2" aria-hidden="true"></div>
+        <div class="sparkle s1" aria-hidden="true"></div>
+        <div class="sparkle s2" aria-hidden="true"></div>
+      </div>
+
+      <!-- Falling items — labels are clickable and tied to checkboxes above -->
+      <label for="item-1" class="fall item pastel-star lane-left" title="Collect: pastel star">✨</label>
+      <label for="item-2" class="fall item pastel-heart lane-center" title="Collect: heart">💖</label>
+      <label for="item-3" class="fall item pastel-leaf lane-right" title="Collect: leaf">🍃</label>
+
+      <label for="item-4" class="fall item pastel-star lane-right alt" title="Collect: star">✨</label>
+      <label for="item-5" class="fall item pastel-heart lane-left alt" title="Collect: heart">💖</label>
+      <label for="item-6" class="fall item pastel-leaf lane-center alt" title="Collect: leaf">🍃</label>
+
+      <!-- Player -->
+      <div class="ground">
+        <div class="player" aria-hidden="true">
+          <span class="player-face">☀️</span>
+          <span class="player-name">You</span>
+        </div>
+      </div>
+
+      <!-- HUD: inventory / counters (revealed by CSS when checkboxes are checked) -->
+      <aside class="hud" aria-hidden="true">
+        <div class="hud-card">
+          <div class="hud-title">Collected</div>
+          <div class="inventory">
+            <div class="slot slot-1">✨</div>
+            <div class="slot slot-2">💖</div>
+            <div class="slot slot-3">🍃</div>
+            <div class="slot slot-4">✨</div>
+            <div class="slot slot-5">💖</div>
+            <div class="slot slot-6">🍃</div>
+          </div>
+          <div class="hint">Tap falling items to collect them ✦</div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Movement controls (radio labels) - keyboard/tab accessible -->
+    <nav class="movement" aria-label="Move player">
+      <label for="pos-left" class="move-btn" title="Move left">◀</label>
+      <label for="pos-center" class="move-btn" title="Move center">●</label>
+      <label for="pos-right" class="move-btn" title="Move right">▶</label>
+    </nav>
+
+    <footer class="footer">
+      <p>Built with HTML & CSS • Responsive • No JavaScript • Perfect Day theme</p>
+    </footer>
+  </main>
+</body>
+</html>
