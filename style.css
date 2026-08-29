@@ -1,0 +1,338 @@
+/* Perfect Day — CSS-only mini-game
+   Responsive, accessible, cute + futuristic (no JavaScript).
+   Uses radios for player position and checkboxes for collection.
+*/
+
+/* --- Theme variables --- */
+:root{
+  --bg-1: linear-gradient(180deg,#f7fbff 0%, #eaf8ff 30%, #f7f6ff 100%);
+  --card-bg: rgba(255,255,255,0.6);
+  --accent: #6ee7d7;
+  --accent-2: #9b7dff;
+  --muted: #6b7280;
+  --glass: rgba(255,255,255,0.12);
+  --shadow: 0 8px 24px rgba(34,36,46,0.12);
+  --soft: 14px;
+  --game-width: min(680px, 94vw);
+}
+
+/* --- Base styles --- */
+* { box-sizing: border-box; }
+html,body { height:100%; }
+body{
+  margin:0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: radial-gradient(60% 40% at 10% 10%, rgba(255,255,255,0.6), transparent),
+              linear-gradient(180deg,#e9fbff 0%, #f6f3ff 100%);
+  color:#0b1221;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  padding:32px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Container */
+.wrap{
+  width:var(--game-width);
+  max-width:980px;
+  margin:auto;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+  align-items:center;
+}
+
+/* Header */
+.header{
+  text-align:center;
+}
+.title{
+  margin:0;
+  font-size:clamp(20px,4.2vw,32px);
+  letter-spacing:0.6px;
+  color:#2b1762;
+  background: linear-gradient(90deg,#6e4aff,#00d1ff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  font-weight:700;
+}
+.subtitle{
+  margin:6px 0 0;
+  color:var(--muted);
+  font-size:14px;
+}
+
+/* Game area */
+.game-area{
+  width:100%;
+  max-width:860px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.45));
+  border-radius:18px;
+  padding:18px;
+  box-shadow: var(--shadow);
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  grid-template-columns: 1fr 220px;
+  gap:18px;
+  align-items:stretch;
+}
+
+/* Left: arena panel */
+.sky{
+  position:relative;
+  min-height:360px;
+  height: min(56vh, 520px);
+  border-radius:12px;
+  background: linear-gradient(180deg,#f7fbff 0%, #e6f6ff 40%, #f7f1ff 100%);
+  border:1px solid rgba(12,10,30,0.04);
+  overflow:hidden;
+  box-shadow: 0 6px 18px rgba(14,22,42,0.06);
+}
+
+/* sun + clouds + sparkles */
+.sun{
+  position:absolute;
+  right:12%;
+  top:6%;
+  width:96px;
+  height:96px;
+  background: radial-gradient(circle at 35% 30%, #fff7e6 0%, #ffefc6 20%, transparent 60%),
+              linear-gradient(180deg,#ffd186, #ffc9a4);
+  border-radius:50%;
+  filter:drop-shadow(0 6px 18px rgba(255,180,90,0.12));
+  transform:translateZ(0);
+}
+.cloud{
+  position:absolute;
+  background:linear-gradient(180deg,rgba(255,255,255,0.85), rgba(255,255,255,0.75));
+  border-radius:32px;
+  width:160px; height:44px;
+  box-shadow: 0 8px 20px rgba(16,24,40,0.06);
+  opacity:0.95;
+}
+.c1{ left:6%; top:18%; transform:scale(0.92); animation:drift 12s linear infinite; }
+.c2{ left:40%; top:8%; transform:scale(0.8); animation:drift 18s linear infinite reverse; }
+
+/* small sparkles */
+.sparkle{
+  position:absolute;
+  width:8px;height:8px;border-radius:50%;
+  background:linear-gradient(90deg,#fff,#ffe7f4);
+  box-shadow:0 0 12px rgba(255,255,255,0.7);
+}
+.s1{ left:22%; top:8%; animation:twinkle 2.8s infinite; }
+.s2{ left:62%; top:26%; animation:twinkle 3.6s infinite; }
+
+/* falling items (labels) - clickable */
+.fall.item{
+  position:absolute;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:52px;
+  height:52px;
+  border-radius:12px;
+  font-size:22px;
+  cursor:pointer;
+  user-select:none;
+  transform-origin: center;
+  z-index:6;
+  box-shadow: 0 8px 22px rgba(38,33,84,0.08);
+  transition: transform 220ms ease, opacity 240ms ease;
+}
+
+/* lanes: left, center, right positions (percentage across the arena) */
+.lane-left{ left:12%; }
+.lane-center{ left:50%; transform:translateX(-50%); }
+.lane-right{ left:85%; transform:translateX(-50%); }
+
+/* pastel styles */
+.pastel-star{ background:linear-gradient(180deg,#fff0ff,#ffeef9); color:#8e4fff; }
+.pastel-heart{ background:linear-gradient(180deg,#fff7f6,#fff0f9); color:#ff5f9e; }
+.pastel-leaf{ background:linear-gradient(180deg,#f0fff6,#e8fff6); color:#00b07c; }
+
+/* alt items (different delays & sizes) */
+.alt{ width:44px; height:44px; font-size:18px; border-radius:10px; opacity:0.95; }
+
+/* falling animation — different durations to create variety */
+.fall{ animation-name:fall; animation-timing-function: linear; animation-iteration-count: infinite; }
+.fall:nth-of-type(1){ top:-10%; animation-duration:6.6s; animation-delay:0.2s; }
+.fall:nth-of-type(2){ top:-15%; animation-duration:8.6s; animation-delay:1.0s; }
+.fall:nth-of-type(3){ top:-5%; animation-duration:7.2s; animation-delay:0.6s; }
+.fall:nth-of-type(4){ top:-25%; animation-duration:9.4s; animation-delay:2.2s; }
+.fall:nth-of-type(5){ top:-18%; animation-duration:6.9s; animation-delay:3.0s; }
+.fall:nth-of-type(6){ top:-12%; animation-duration:8.2s; animation-delay:1.6s; }
+
+/* When a checkbox is checked the corresponding label (which is the item) gets 'collected' styling.
+   Inputs appear earlier in DOM so we can use general sibling selectors to influence later labels.
+*/
+#item-1:checked ~ .game-area .fall[for="item-1"],
+#item-2:checked ~ .game-area .fall[for="item-2"],
+#item-3:checked ~ .game-area .fall[for="item-3"],
+#item-4:checked ~ .game-area .fall[for="item-4"],
+#item-5:checked ~ .game-area .fall[for="item-5"],
+#item-6:checked ~ .game-area .fall[for="item-6"] {
+  transform: translateY(40px) scale(0.6) rotate(-6deg);
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(1px);
+  transition: transform 520ms cubic-bezier(.2,.9,.1,1), opacity 420ms ease;
+}
+
+/* Ground & player */
+.ground{
+  position:absolute;
+  left:0; right:0; bottom:18px;
+  height:110px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  pointer-events:none;
+}
+.player{
+  width:122px;
+  height:86px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.75));
+  border-radius:20px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 16px;
+  box-shadow: 0 12px 30px rgba(16,24,40,0.08);
+  transform:translateX(-50%);
+  position:relative;
+  left:50%;
+  transition:left 280ms cubic-bezier(.18,.9,.24,1), transform 220ms ease;
+  pointer-events:none;
+}
+.player-face{ font-size:28px; display:inline-block; transform:translateY(2px); }
+.player-name{ font-size:14px; color:#3b3159; font-weight:600; }
+
+/* Move the player based on checked radio: inputs placed before .game-area, so use general sibling selector */
+#pos-left:checked ~ .game-area .player { left:16%; transform:translateX(-0%); }
+#pos-center:checked ~ .game-area .player { left:50%; transform:translateX(-50%); }
+#pos-right:checked ~ .game-area .player { left:84%; transform:translateX(-50%); }
+
+/* Also align the player's face tilt depending on position */
+#pos-left:checked ~ .game-area .player-face { transform:translateY(2px) rotate(-6deg); }
+#pos-right:checked ~ .game-area .player-face { transform:translateY(2px) rotate(6deg); }
+
+/* HUD / Inventory — reveal slots when corresponding checkboxes are checked */
+.hud{
+  padding:8px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+}
+.hud-card{
+  width:100%;
+  background:linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.65));
+  border-radius:12px;
+  padding:16px;
+  box-shadow: 0 6px 18px rgba(12,16,36,0.06);
+  text-align:center;
+}
+.hud-title{ font-weight:700; color:#2b1762; margin-bottom:8px; }
+.inventory{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:8px;
+  align-items:center;
+  justify-items:center;
+  margin-bottom:10px;
+}
+.slot{
+  width:48px;height:48px;border-radius:10px;
+  background:rgba(255,255,255,0.45);
+  display:flex;align-items:center;justify-content:center;
+  color:#6b7280; font-size:20px; opacity:0.18; transform:scale(0.9);
+  transition:opacity 260ms ease, transform 260ms cubic-bezier(.2,.9,.1,1);
+}
+
+/* Reveal slot when its checkbox is checked (matching the input id -> index) */
+#item-1:checked ~ .game-area .slot-1,
+#item-2:checked ~ .game-area .slot-2,
+#item-3:checked ~ .game-area .slot-3,
+#item-4:checked ~ .game-area .slot-4,
+#item-5:checked ~ .game-area .slot-5,
+#item-6:checked ~ .game-area .slot-6 {
+  opacity:1; transform:scale(1);
+  background:linear-gradient(90deg,#ffffff,#fff8ff);
+  color:#2b1762;
+  box-shadow: 0 8px 20px rgba(34,36,46,0.06);
+}
+
+/* Movement controls (radio labels) */
+.movement{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+}
+.move-btn{
+  display:inline-grid;
+  place-items:center;
+  width:56px;height:56px;border-radius:12px;
+  background:linear-gradient(180deg,#ffffff,#fbfbff);
+  box-shadow: 0 8px 18px rgba(16,24,40,0.06);
+  cursor:pointer;
+  user-select:none;
+  font-weight:700;
+  color:#2b1762;
+  border:1px solid rgba(12,10,30,0.04);
+  transition:transform 160ms ease, box-shadow 160ms ease;
+}
+.move-btn:active{ transform:translateY(2px) scale(.98); }
+
+/* Visually indicate active radio (by styling label when associated input is checked) */
+#pos-left:checked ~ .movement label[for="pos-left"],
+#pos-center:checked ~ .movement label[for="pos-center"],
+#pos-right:checked ~ .movement label[for="pos-right"]{
+  box-shadow: 0 12px 28px rgba(106,90,255,0.12);
+  background: linear-gradient(90deg,#dee8ff,#fff9ff);
+  transform:translateY(-4px);
+}
+
+/* Footer */
+.footer{ text-align:center; color:var(--muted); font-size:13px; }
+
+/* Animations */
+@keyframes drift {
+  0%{ transform: translateX(0) scale(1); }
+  50%{ transform: translateX(8px) scale(1.02); }
+  100%{ transform: translateX(0) scale(1); }
+}
+@keyframes twinkle {
+  0%{ opacity:0.4; transform:scale(.7) rotate(0deg); }
+  50%{ opacity:1; transform:scale(1.1) rotate(12deg); }
+  100%{ opacity:0.4; transform:scale(.7) rotate(0deg); }
+}
+@keyframes fall {
+  0% { transform: translateY(-12vh) rotate(0deg); opacity:1; }
+  65% { opacity:1; }
+  100% { transform: translateY(68vh) rotate(360deg); opacity:0.98; }
+}
+
+/* Accessibility & Preferences */
+@media (prefers-reduced-motion: reduce){
+  .fall, .cloud, .sparkle, .player, .move-btn, .pos-input { animation: none !important; transition:none !important; }
+}
+
+/* Responsive adjustments */
+@media (max-width:880px){
+  .game-area{ grid-template-columns: 1fr; padding:14px; }
+  .hud{ order:2; }
+  .sky{ order:1; min-height:360px; }
+  .movement{ gap:8px; }
+  .title{ font-size:20px; }
+}
+
+@media (max-width:420px){
+  .player{ width:96px; height:70px; padding:10px; gap:8px; }
+  .player-face{ font-size:22px; }
+  .fall{ width:44px; height:44px; font-size:18px; }
+  .slot{ width:40px; height:40px; font-size:18px; }
+}
